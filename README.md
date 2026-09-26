@@ -1,243 +1,84 @@
-# DevLink API v1.0 🚀
+# DevLink API
 
-### Codeacademy Full-Stack Bootcamp — NoSQL Backend Project
+DevLink is a REST API for a developer networking platform. It lets users create developer profiles, share short posts, connect with other developers, and react to posts. The project is built with Node.js, Express, MongoDB, and Mongoose.
 
----
+## Getting Started
 
-## Overview
+### Prerequisites
 
-**DevLink v1.0** is a lightweight professional networking backend built with:
+- Node.js and npm
+- MongoDB running locally, or a MongoDB connection URI
 
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose ODM
+### Install and run
 
-DevLink allows developers to:
+1. Clone or download this repository, then open a terminal in the project directory.
+2. Install the dependencies:
 
-- Create professional profiles
-- Publish short career-focused posts
-- Connect with other developers
-- React to posts
+   ```sh
+   npm install
+   ```
 
-This project focuses on real-world backend architecture using NoSQL document modeling, references, subdocuments, virtual fields, and relational-style data in MongoDB.
+3. Start MongoDB. By default, DevLink connects to `mongodb://127.0.0.1:27017/devlink`.
+4. Start the API in development mode:
 
----
+   ```sh
+   npm run dev
+   ```
 
-## Tech Stack
+   Or run it without the development watcher:
 
-- Express.js
-- MongoDB
-- Mongoose
-- Node.js
-- Insomnia/Postman for testing
+   ```sh
+   npm start
+   ```
 
----
+The server starts at `http://localhost:3001` once it connects to MongoDB. Set `MONGODB_URI` to use a different database URI, or set `PORT` to change the server port.
 
-## Project Structure
+## Try the API
 
+Use an API client such as Insomnia or Postman. All routes are JSON endpoints under `/api`.
+
+| Method | Endpoint                                                 | Description                                      |
+| ------ | -------------------------------------------------------- | ------------------------------------------------ |
+| GET    | `/api/developers`                                        | List developers                                  |
+| GET    | `/api/developers/:developerId`                           | Get a developer, including posts and connections |
+| POST   | `/api/developers`                                        | Create a developer                               |
+| PUT    | `/api/developers/:developerId`                           | Update a developer                               |
+| DELETE | `/api/developers/:developerId`                           | Delete a developer                               |
+| POST   | `/api/developers/:developerId/connections/:connectionId` | Add a connection                                 |
+| DELETE | `/api/developers/:developerId/connections/:connectionId` | Remove a connection                              |
+| GET    | `/api/posts`                                             | List posts, newest first                         |
+| GET    | `/api/posts/:postId`                                     | Get a post                                       |
+| POST   | `/api/posts`                                             | Create a post                                    |
+| PUT    | `/api/posts/:postId`                                     | Update a post                                    |
+| DELETE | `/api/posts/:postId`                                     | Delete a post                                    |
+| POST   | `/api/posts/:postId/reactions`                           | Add a reaction                                   |
+| DELETE | `/api/posts/:postId/reactions/:reactionId`               | Remove a reaction                                |
+
+### Example: create a developer
+
+```http
+POST /api/developers
+Content-Type: application/json
 ```
-devlink/
-│
-├── config/
-│   └── connection.js
-│
-├── controllers/
-│   ├── developerController.js
-│   └── postController.js
-│
-├── models/
-│   ├── Developer.js
-│   ├── Post.js
-│   └── Reaction.js
-│
-├── routes/
-│   ├── api/
-│   │   ├── developerRoutes.js
-│   │   ├── postRoutes.js
-│   │   └── index.js
-│   └── index.js
-│
-├── server.js
-├── package.json
-└── README.md
-```
-
----
-
-## Models
-
----
-
-### Developer
-
-Represents a professional on the DevLink platform.
-
-**Fields**
-
-- `username` (String, required, unique, trimmed)
-- `email` (String, required, unique, validated format)
-- `headline` (String, optional)
-- `skills` (Array of Strings)
-- `posts` (Array of ObjectId references to Post)
-- `connections` (Array of ObjectId references to Developer)
-
-**Virtuals**
-
-- `connectionCount`
-- `postCount`
-
----
-
-### Post
-
-Represents a professional post shared by a developer.
-
-**Fields**
-
-- `content` (String, required, 1–300 characters)
-- `createdAt` (Date, default = Date.now, formatted getter)
-- `authorUsername` (String, required)
-- `reactions` (Array of Reaction subdocuments)
-
-**Virtuals**
-
-- `reactionCount`
-
-Posts return sorted newest first.
-
----
-
-### Reaction (Subdocument Schema Only)
-
-Reactions are embedded within posts.
-
-**Fields**
-
-- `reactionId` (ObjectId, default new ObjectId)
-- `reactionBody` (String, max 200)
-- `username` (String, required)
-- `createdAt` (Date, formatted getter)
-
----
-
-## API Routes
-
----
-
-### `/api/developers`
-
-| Method | Route                          | Description                                      |
-| ------ | ------------------------------ | ------------------------------------------------ |
-| GET    | `/api/developers`              | Get all developers                               |
-| GET    | `/api/developers/:developerId` | Get one developer (populate posts + connections) |
-| POST   | `/api/developers`              | Create a developer                               |
-| PUT    | `/api/developers/:developerId` | Update a developer                               |
-| DELETE | `/api/developers/:developerId` | Delete a developer                               |
-
----
-
-### `/api/developers/:developerId/connections/:connectionId`
-
-| Method | Description         |
-| ------ | ------------------- |
-| POST   | Add a connection    |
-| DELETE | Remove a connection |
-
----
-
-### `/api/posts`
-
-| Method | Route                | Description                                |
-| ------ | -------------------- | ------------------------------------------ |
-| GET    | `/api/posts`         | Get all posts (newest first)               |
-| GET    | `/api/posts/:postId` | Get one post                               |
-| POST   | `/api/posts`         | Create a post and associate with developer |
-| PUT    | `/api/posts/:postId` | Update a post                              |
-| DELETE | `/api/posts/:postId` | Delete a post                              |
-
----
-
-### `/api/posts/:postId/reactions`
-
-| Method | Description                   |
-| ------ | ----------------------------- |
-| POST   | Add reaction                  |
-| DELETE | Remove reaction by reactionId |
-
----
-
-## Example Requests
-
-### Create Developer
 
 ```json
-POST /api/developers
-
 {
   "username": "ada",
   "email": "ada@devlink.io",
-  "headline": "Full-Stack Developer | React | Node",
+  "headline": "Full-Stack Developer",
   "skills": ["JavaScript", "MongoDB", "React"]
 }
 ```
 
----
+## Project Structure
 
-### Create Post
-
-```json
-POST /api/posts
-
-{
-  "content": "Just shipped my first full-stack project!",
-  "authorUsername": "ada",
-  "developerId": "PUT_OBJECT_ID_HERE"
-}
+```text
+config/       MongoDB connection
+controllers/  Developer and post request handlers
+models/       Mongoose models and schemas
+routes/       API route definitions
+server.js     Express application entry point
 ```
-
----
-
-### Add Reaction
-
-```json
-POST /api/posts/:postId/reactions
-
-{
-  "reactionBody": "Congrats! 🚀",
-  "username": "grace"
-}
-```
-
----
-
-## Validation & Standards
-
-- All update routes use `runValidators: true`
-- 404 returned for missing resources
-- 400 returned for validation errors
-- 500 returned for server errors
-- JSON responses use consistent format
-
-Example success response:
-
-```json
-{
-  "success": true,
-  "data": {}
-}
-```
-
-Example error response:
-
-```json
-{
-  "success": false,
-  "message": "Developer not found"
-}
-```
-
----
 
 ## Learning Objectives
 
@@ -260,4 +101,3 @@ Keep it professional.
 Ship working software.
 
 ---
-
